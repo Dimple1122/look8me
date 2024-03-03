@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "100717283384",
+    "project_id": "look8me-e87bb",
+    "storage_bucket": "look8me-e87bb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:100717283384:android:0800f4b005bb0a4141fecd",
+        "android_client_info": {
+          "package_name": "com.look8me.android"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBM8JaGrl3H_57DENoewKNGX2ZHjdwNCYs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

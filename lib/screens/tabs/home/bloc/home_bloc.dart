@@ -2,10 +2,8 @@ import 'dart:async';
 
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:look8me/common/services/firebase/firebase_auth_service.dart';
-import 'package:look8me/common/services/firebase/firebase_database_service.dart';
 import 'package:look8me/common/services/global_database_helper.dart';
-import 'package:look8me/common/services/locator.dart';
+import 'package:look8me/common/utils/utility.dart';
 
 import '../../../../common/model/novel_model.dart';
 
@@ -20,16 +18,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   FutureOr<void> homeLoadingComponents(HomeLoadingEvent event, Emitter<HomeState> emit) async {
     emit(HomeLoadingState());
-    if(GlobalDatabaseHelper.currentUser == null) {
-      final userId = locator.get<FirebaseAuthService>().getUserId();
-      GlobalDatabaseHelper.currentUser = await locator.get<FirebaseDatabaseService>().getUser(userId!);
-    }
-    if(GlobalDatabaseHelper.allNovels.isEmpty) {
-      GlobalDatabaseHelper.allNovels = await locator.get<FirebaseDatabaseService>().getNovels();
-    }
-    if(GlobalDatabaseHelper.allCategories.isEmpty) {
-      GlobalDatabaseHelper.allCategories = await locator.get<FirebaseDatabaseService>().getCategories();
-    }
+    await Utility.getAllData();
     for (var category in GlobalDatabaseHelper.allCategories) {
       final novelsByCategory = GlobalDatabaseHelper.allNovels.where((novel) => novel.novelCategory == category).toList();
       homeComponents.add(NovelByCategory(category: category, novels: novelsByCategory));

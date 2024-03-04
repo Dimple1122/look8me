@@ -4,6 +4,7 @@ import 'package:look8me/screens/tabs/explore/bloc/explore_bloc.dart';
 import 'package:look8me/screens/tabs/explore/view/explore_view_ui.dart';
 import 'package:look8me/screens/tabs/home/bloc/home_bloc.dart';
 import 'package:look8me/screens/tabs/home/view/home_view_ui.dart';
+import 'package:look8me/screens/tabs/my_list/bloc/my_list_bloc.dart';
 import 'package:look8me/screens/tabs/my_list/view/my_list_view_ui.dart';
 
 class Tabs extends StatefulWidget {
@@ -18,8 +19,8 @@ class _TabsState extends State<Tabs> {
   int _currentIndex = 0;
   final List<Widget> screens = [
     BlocProvider(create: (context) => HomeBloc()..add(HomeLoadingEvent()),child: const Home()),
-    BlocProvider(create: (context) => ExploreBloc(),child: const Explore()),
-    const MyList()
+    BlocProvider(create: (context) => ExploreBloc()..add(ExploreLoadEvent()),child: const Explore()),
+    BlocProvider(create: (context) => MyListBloc()..add(LoadMyListEvent()),child: const MyList())
   ];
 
   void onTabTapped(int index) {
@@ -68,5 +69,4 @@ class _TabsState extends State<Tabs> {
       ),
     );
   }
-
 }

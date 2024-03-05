@@ -54,7 +54,10 @@ class NovelSummaryBloc extends Bloc<NovelSummaryEvent, NovelSummaryState> {
   }
 
   FutureOr<void> updateReadProgress(
-      NovelReadProgressUpdatedEvent event, Emitter<NovelSummaryState> emit) {}
+      NovelReadProgressUpdatedEvent event, Emitter<NovelSummaryState> emit) {
+    readProgress = event.readProgress;
+    emit(NovelReadProgressUpdateState(event.readProgress));
+  }
 
   @override
   Future<void> close() {

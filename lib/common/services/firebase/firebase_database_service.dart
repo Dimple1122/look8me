@@ -14,4 +14,6 @@ abstract class FirebaseDatabaseService {
   Future<void> unLikeNovel({required String userId, required String novelId, required int novelIndex});
   Future<void> addNovelToMyList({required String userId, required String novelId});
   Future<void> removeNovelFromMyList({required String userId, required String novelId});
+  Future<void> updateContinueNovelList({required String userId, required String novelId, required double readProgress});
+  Future<void> removeNovelFromContinueList({required String userId, required String novelId});
 }

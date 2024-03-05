@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:look8me/common/services/global_database_helper.dart';
+import 'package:look8me/common/utils/app_strings.dart';
 import 'package:look8me/common/utils/utility.dart';
 
 import '../../../../common/model/novel_model.dart';
@@ -19,6 +20,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   FutureOr<void> homeLoadingComponents(HomeLoadingEvent event, Emitter<HomeState> emit) async {
     emit(HomeLoadingState());
     await Utility.getAllData();
+    // final continueReadingNovel = GlobalDatabaseHelper.getAllContinueReadingNovels();
     for (var category in GlobalDatabaseHelper.allCategories) {
       final novelsByCategory = GlobalDatabaseHelper.allNovels.where((novel) => novel.novelCategory == category).toList();
       homeComponents.add(NovelByCategory(category: category, novels: novelsByCategory));
@@ -45,7 +47,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         }
       }
       recommendedNovels.shuffle();
-      homeComponents.insert(0, NovelByCategory(category: 'Top Picks For You', novels: recommendedNovels));
+      homeComponents.insert(0, NovelByCategory(category: AppStrings.topPicks, novels: recommendedNovels));
     }
   }
 }

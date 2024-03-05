@@ -1,19 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:look8me/common/services/locator.dart';
+import 'package:look8me/common/services/navigation_service.dart';
 import 'package:look8me/common/utils/common_widgets.dart';
 import 'package:look8me/screens/novel_view/bloc/novel_view_bloc.dart';
 import 'package:pdfx/pdfx.dart';
 
-import '../../../common/model/novel_model.dart';
+class NovelView extends StatelessWidget with WidgetsBindingObserver {
+  const NovelView({super.key});
 
-class NovelView extends StatelessWidget {
-  final Novel novel;
-  final double readProgress;
-
-  const NovelView({super.key, required this.novel, required this.readProgress});
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // TODO: implement didChangeAppLifecycleState
+    super.didChangeAppLifecycleState(state);
+  }
 
   @override
   Widget build(BuildContext context) {
+    final bloc = BlocProvider.of<NovelViewBloc>(context);
     late final PdfControllerPinch pdfController;
     late int page;
     return Scaffold(
@@ -28,32 +32,39 @@ class NovelView extends StatelessWidget {
             return AppBar(
               backgroundColor: Colors.black,
               centerTitle: true,
-              title: Column(
+              titleSpacing: 5,
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    novel.novelName!,
-                    style: const TextStyle(fontSize: 22, color: Colors.white),
-                  ),
-                  if(state is NovelViewLoadedState || state is UpdatedPageAndReadProgressState)
-                    PdfPageNumber(
-                      controller: pdfController,
-                      // When `loadingState != PdfLoadingState.success`  `pagesCount` equals null_
-                      builder: (_, state, loadingState, pagesCount) => Text(
-                        '$page/${pagesCount ?? 0}',
-                        style: const TextStyle(fontSize: 14, color: Colors.white),
+                  GestureDetector(
+                      onTap: () => locator.get<NavigationService>().pop(bloc.readProgress),
+                      child: const Icon(
+                        Icons.arrow_back,
+                        color: Colors.white,
+                      )),
+                  Column(
+                    children: [
+                      Text(
+                        bloc.novel.novelName!,
+                        style: const TextStyle(fontSize: 22, color: Colors.white),
                       ),
-                    )
-                  else
-                    Container()
+                      if(state is NovelViewLoadedState || state is UpdatedPageAndReadProgressState)
+                        PdfPageNumber(
+                          controller: pdfController,
+                          // When `loadingState != PdfLoadingState.success`  `pagesCount` equals null_
+                          builder: (_, state, loadingState, pagesCount) => Text(
+                            '$page/${pagesCount ?? 0}',
+                            style: const TextStyle(fontSize: 14, color: Colors.white),
+                          ),
+                        )
+                      else
+                        Container()
+                    ],
+                  ),
+                  const SizedBox()
                 ],
               ),
-              leading: GestureDetector(
-                  onTap: () {},
-                  child: const Icon(
-                    Icons.arrow_back,
-                    color: Colors.white,
-                  )),
-              leadingWidth: 0,
+              automaticallyImplyLeading: false,
             );
           },
         ),
@@ -66,12 +77,12 @@ class NovelView extends StatelessWidget {
             page = 1;
             Future.delayed(const Duration(milliseconds: 500), () {
               page =
-                  (pdfController.pagesCount! * readProgress).round();
+                  (pdfController.pagesCount! * bloc.readProgress).round();
               if (page > 0 && page != pdfController.pagesCount) {
                 pdfController.jumpToPage(page);
                 context
                     .read<NovelViewBloc>()
-                    .add(UpdatePageAndReadProgressEvent(page: page));
+                    .add(UpdatePageAndReadProgressEvent(page: page, readProgress: page/pdfController.pagesCount!));
               }
             });
           }
@@ -95,7 +106,7 @@ class NovelView extends StatelessWidget {
                   onPageChanged: (page) {
                     context
                         .read<NovelViewBloc>()
-                        .add(UpdatePageAndReadProgressEvent(page: page));
+                        .add(UpdatePageAndReadProgressEvent(page: page, readProgress: page/pdfController.pagesCount!));
                   },
                   scrollDirection: Axis.vertical,
                   controller: pdfController,

@@ -7,6 +7,6 @@ class ScreenName {
   static const myList = 'MyList';
   static const tabs = 'Tabs';
   static const novelSummary = 'NovelSummary';
-  static const novelContent = 'NovelContent';
+  static const novelView = 'NovelView';
   static const profile = 'Profile';
 }

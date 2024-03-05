@@ -43,3 +43,17 @@ class NovelByCategory {
   List<Novel> novels;
   NovelByCategory({required this.category, required this.novels});
 }
+
+class NovelWithReadProgress {
+  double readProgress;
+  Novel novel;
+  NovelWithReadProgress({required this.novel, required this.readProgress});
+}
+
+class NovelSummaryDetails {
+  String novelId;
+  double readProgress;
+  bool isAddedToMyList;
+  bool isLiked;
+  NovelSummaryDetails({required this.novelId, required this.readProgress, required this.isLiked, required this.isAddedToMyList});
+}

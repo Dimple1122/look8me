@@ -2,9 +2,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:look8me/common/model/novel_model.dart';
 import 'package:look8me/common/services/locator.dart';
 import 'package:look8me/common/services/navigation_service.dart';
 import 'package:look8me/common/utils/common_widgets.dart';
+import 'package:look8me/routes/screen_name.dart';
 import 'package:look8me/screens/novel_summary/bloc/novel_summary_bloc.dart';
 import 'package:look8me/screens/novel_summary/view/user_action_item.dart';
 import 'package:share_plus/share_plus.dart';
@@ -27,7 +29,7 @@ class NovelSummary extends StatelessWidget {
           children: [
             GestureDetector(
               child: const Icon(Icons.arrow_back_ios, color: Colors.white),
-              onTap: () => locator.get<NavigationService>().goBack(),
+              onTap: () => locator.get<NavigationService>().pop(NovelSummaryDetails(novelId: bloc.novel.novelId!, readProgress: bloc.readProgress, isLiked: bloc.isLiked, isAddedToMyList: bloc.isAddedToMyList)),
             ),
             const SizedBox(width: 5),
             Text(
@@ -99,9 +101,12 @@ class NovelSummary extends StatelessWidget {
                                             MediaQuery.of(context).size.width *
                                                 0.85,
                                         name: bloc.readProgress == 0.0
-                                            ? 'Read'
+                                            ? 'Read' : bloc.readProgress == 1.0 ? 'Read Again'
                                             : 'Resume Reading',
-                                        onPressed: () {},
+                                        onPressed: () async {
+                                          final readProgress = await locator.get<NavigationService>().navigateTo(ScreenName.novelView, arguments: NovelWithReadProgress(novel: bloc.novel, readProgress: bloc.readProgress));
+                                          bloc.add(NovelReadProgressUpdatedEvent(readProgress));
+                                        },
                                         backgroundColor: Colors.white,
                                         textColor: Colors.black,
                                         fontSize: 22,

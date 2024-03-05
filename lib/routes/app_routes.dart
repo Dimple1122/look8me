@@ -5,6 +5,8 @@ import 'package:look8me/routes/screen_name.dart';
 import 'package:look8me/screens/error/view/error_ui.dart';
 import 'package:look8me/screens/login/bloc/login_bloc.dart';
 import 'package:look8me/screens/novel_summary/bloc/novel_summary_bloc.dart';
+import 'package:look8me/screens/novel_view/bloc/novel_view_bloc.dart';
+import 'package:look8me/screens/novel_view/view/novel_view_ui.dart';
 import 'package:look8me/screens/onboarding/bloc/onboarding_bloc.dart';
 import 'package:look8me/screens/onboarding/view/onboarding_view_ui.dart';
 import 'package:look8me/screens/tabs/view/tabs_view_ui.dart';
@@ -63,6 +65,9 @@ class AppRoutes {
       case ScreenName.novelSummary:
         final novel = settings.arguments as Novel;
         return MaterialPageRoute(builder: (context) => BlocProvider(create: (context) => NovelSummaryBloc(novel: novel)..add(NovelSummaryLoadingEvent()), child: const NovelSummary()));
+      case ScreenName.novelView:
+        final novelInfo = settings.arguments as NovelWithReadProgress;
+        return MaterialPageRoute(builder: (context) => BlocProvider(create: (context) => NovelViewBloc(novel: novelInfo.novel, readProgress: novelInfo.readProgress)..add(NovelViewInitializationEvent()), child: const NovelView()));
       default:
         return MaterialPageRoute(
             settings: settings, builder: (context) => const ErrorPage());

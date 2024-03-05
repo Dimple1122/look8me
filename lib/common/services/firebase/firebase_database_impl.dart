@@ -164,4 +164,40 @@ class FirebaseDatabaseImpl extends FirebaseDatabaseService {
       return Transaction.success(updatedMyListNovels);
     });
   }
+
+  @override
+  Future<void> updateContinueNovelList({required String userId, required String novelId, required double readProgress}) async {
+    final currentUserContinueListNovelsRef = reference.child('users/$userId/continue_reading_novels');
+    await currentUserContinueListNovelsRef.runTransaction((continueReadingNovels) {
+      if (continueReadingNovels == null) {
+        return Transaction.success([ContinueReadingNovel(novelId: novelId, readProgress: readProgress).toJson()]);
+      }
+      final List<dynamic> data = jsonDecode(jsonEncode(continueReadingNovels));
+      List<ContinueReadingNovel> updatedContinueReadNovels = data.map((e) => ContinueReadingNovel.fromJson(e)).toList();
+      final index = updatedContinueReadNovels.indexWhere((element) => element.novelId == novelId);
+      if(index != -1) {
+        ContinueReadingNovel novel = updatedContinueReadNovels.removeAt(index);
+        novel.readProgress = readProgress;
+        updatedContinueReadNovels.insert(0, novel);
+      }
+      else {
+        updatedContinueReadNovels.insert(0, ContinueReadingNovel(novelId: novelId, readProgress: readProgress));
+      }
+      return Transaction.success(updatedContinueReadNovels.map((e) => e.toJson()).toList());
+    });
+  }
+
+  @override
+  Future<void> removeNovelFromContinueList({required String userId, required String novelId}) async {
+    final currentUserContinueListNovelsRef = reference.child('users/$userId/continue_reading_novels');
+    await currentUserContinueListNovelsRef.runTransaction((continueReadingNovels) {
+      if (continueReadingNovels == null) {
+        return Transaction.success([]);
+      }
+      final List<dynamic> data = jsonDecode(jsonEncode(continueReadingNovels));
+      List<ContinueReadingNovel> updatedContinueReadNovels = data.map((e) => ContinueReadingNovel.fromJson(e)).toList();
+      updatedContinueReadNovels.removeWhere((element) => element.novelId == novelId);
+      return Transaction.success(updatedContinueReadNovels.map((e) => e.toJson()).toList());
+    });
+  }
 }

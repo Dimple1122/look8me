@@ -6,15 +6,10 @@ abstract class NovelViewEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class NovelViewInitializationEvent extends NovelViewEvent {
-  final String novelContent;
-  NovelViewInitializationEvent({required this.novelContent});
-}
+class NovelViewInitializationEvent extends NovelViewEvent {}
 
 class UpdatePageAndReadProgressEvent extends NovelViewEvent {
   final int page;
-  UpdatePageAndReadProgressEvent({required this.page});
-
-  @override
-  List<Object> get props => [page];
+  final double readProgress;
+  UpdatePageAndReadProgressEvent({required this.page, required this.readProgress});
 }

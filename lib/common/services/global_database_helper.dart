@@ -18,7 +18,7 @@ class GlobalDatabaseHelper {
   static List<Novel> getAllContinueReadingNovels() => allNovels
       .where((novel) => currentUser!.continueReadingNovels!.any(
           (continueReadingNovel) =>
-              continueReadingNovel.novelId == novel.novelId))
+              continueReadingNovel.novelId == novel.novelId && continueReadingNovel.readProgress != 1.0))
       .toList();
 
   static bool isNovelInContinueReading(String novelId) =>
@@ -62,6 +62,24 @@ class GlobalDatabaseHelper {
   static void removeNovelFromMyList(String novelId) async {
     currentUser!.myListNovels!.removeWhere((element) => element == novelId);
     locator.get<FirebaseDatabaseService>().removeNovelFromMyList(userId: currentUser!.userId!, novelId: novelId);
+  }
+
+  static void updateNovelProgressToContinueReading(String novelId, double readProgress) async {
+    final index = currentUser!.continueReadingNovels!.indexWhere((element) => element.novelId == novelId);
+    if(index != -1) {
+      ContinueReadingNovel novel = currentUser!.continueReadingNovels!.removeAt(index);
+      novel.readProgress = readProgress;
+      currentUser!.continueReadingNovels!.insert(0, novel);
+    }
+    else {
+      currentUser!.continueReadingNovels!.insert(0, ContinueReadingNovel(novelId: novelId, readProgress: readProgress));
+    }
+    locator.get<FirebaseDatabaseService>().updateContinueNovelList(userId: currentUser!.userId!, novelId: novelId, readProgress: readProgress);
+  }
+
+  static void removeNovelFromContinueReading(String novelId) async {
+    currentUser!.continueReadingNovels!.removeWhere((element) => element.novelId == novelId);
+    locator.get<FirebaseDatabaseService>().removeNovelFromContinueList(userId: currentUser!.userId!, novelId: novelId);
   }
 
 }

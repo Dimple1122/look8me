@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:look8me/common/model/novel_model.dart';
 import 'package:look8me/common/services/locator.dart';
 import 'package:look8me/common/services/navigation_service.dart';
 import 'package:look8me/common/utils/common_widgets.dart';
@@ -26,7 +27,7 @@ class MyList extends StatelessWidget {
           builder: (context, state) {
             return state is MyListLoadingState
                 ? CommonWidget.getLoader()
-                : bloc.myList.isEmpty && state is MyListLoadedState
+                : bloc.myList.isEmpty && state is !MyListLoadingState
                     ? const Center(
                         child: Text('Add Your Favorites here!',
                             style: TextStyle(
@@ -37,7 +38,12 @@ class MyList extends StatelessWidget {
                         itemCount: bloc.myList.length,
                         itemBuilder: (context, index) {
                           return GestureDetector(
-                            onTap: () => locator.get<NavigationService>().navigateTo(ScreenName.novelSummary, arguments: bloc.myList.elementAt(index)),
+                            onTap: () async {
+                              NovelSummaryDetails data = await locator.get<NavigationService>().navigateTo(ScreenName.novelSummary, arguments: bloc.myList.elementAt(index));
+                              if(!data.isAddedToMyList) {
+                                bloc.add(RemoveNovelFromMyListEvent(bloc.myList.elementAt(index).novelId!));
+                              }
+                            },
                             child: Padding(
                               padding: const EdgeInsets.all(10.0),
                               child: Row(
@@ -126,9 +132,12 @@ class MyList extends StatelessWidget {
                                                           ])),
                                                       const SizedBox(height: 10),
                                                       GestureDetector(
-                                                          onTap: () {
+                                                          onTap: () async {
                                                             locator.get<NavigationService>().goBack();
-                                                            locator.get<NavigationService>().navigateTo(ScreenName.novelSummary, arguments: bloc.myList.elementAt(index));
+                                                            NovelSummaryDetails data = await locator.get<NavigationService>().navigateTo(ScreenName.novelSummary, arguments: bloc.myList.elementAt(index));
+                                                            if(!data.isAddedToMyList) {
+                                                              bloc.add(RemoveNovelFromMyListEvent(bloc.myList.elementAt(index).novelId!));
+                                                            }
                                                           },
                                                           child: Row(mainAxisSize: MainAxisSize.max, children: [
                                                             const Icon(

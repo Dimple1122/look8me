@@ -13,3 +13,5 @@ class UpdatePageAndReadProgressEvent extends NovelViewEvent {
   final double readProgress;
   UpdatePageAndReadProgressEvent({required this.page, required this.readProgress});
 }
+
+class UpdateContinueReadingDbEvent extends NovelViewEvent {}

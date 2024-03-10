@@ -87,6 +87,11 @@ class FirebaseDatabaseImpl extends FirebaseDatabaseService {
   }
 
   @override
+  DatabaseReference getContinueReadingNovelsRef(String userId) {
+    return reference.child('users/$userId/continue_reading_novels');
+  }
+
+  @override
   Future<void> likeNovel(
       {required String userId,
       required String novelId,

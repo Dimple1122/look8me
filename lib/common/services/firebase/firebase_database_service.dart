@@ -10,6 +10,7 @@ abstract class FirebaseDatabaseService {
   Future<List<String>> getCategories();
   Future<User?> getUser(String userId);
   DatabaseReference getNoOfLikesRef(int index);
+  DatabaseReference getContinueReadingNovelsRef(String userId);
   Future<void> likeNovel({required String userId, required String novelId, required int novelIndex});
   Future<void> unLikeNovel({required String userId, required String novelId, required int novelIndex});
   Future<void> addNovelToMyList({required String userId, required String novelId});

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:look8me/common/model/bottom_sheet_modal_item.dart';
 import 'package:look8me/common/utils/enums.dart';
 
 class CommonWidget {
@@ -224,5 +225,55 @@ class CommonWidget {
             ),
           );
         });
+  }
+
+  static void showBottomModalSheet({required BuildContext context, required String title, required List<BottomSheetModalItem> items}) {
+    showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return Padding(
+            padding:
+            const EdgeInsets.all(10.0),
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                      title,
+                      style: TextStyle(
+                          fontWeight:
+                          FontWeight.bold,
+                          fontSize: 24,
+                          color: Colors.white.withOpacity(0.9))),
+                  const Divider(color: Colors.grey, thickness: 0.5),
+                  const SizedBox(height: 5),
+                  for(int index=0; index < items.length; index++)
+                    Container(
+                      padding: const EdgeInsets.only(bottom: 5),
+                      child: GestureDetector(
+                          onTap: items.elementAt(index).onTap,
+                          child: ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            dense: true,
+                            visualDensity: const VisualDensity(horizontal: 0, vertical: -4),
+                            // minVerticalPadding: 0,
+                            title: Row(mainAxisSize: MainAxisSize.max,children: [
+                              Icon(
+                                  items.elementAt(index).icon,
+                                  color: Colors.white70, size: 30),
+                              const SizedBox(width: 5),
+                              Text(
+                                  items.elementAt(index).itemName,
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      color: Colors.white.withOpacity(0.9)))
+                            ]),
+                          )),
+                    )
+                ]),
+          );
+        },
+        shape: const ContinuousRectangleBorder(),
+        backgroundColor: const Color(0xFF1e2529));
   }
 }

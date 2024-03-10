@@ -123,7 +123,7 @@ class NovelSummary extends StatelessWidget {
                                       width: MediaQuery.of(context).size.width *
                                           0.85,
                                       child: LinearProgressIndicator(
-                                          value: bloc.readProgress,
+                                          value: bloc.readProgress.toDouble(),
                                           color: Colors.green,
                                           backgroundColor: Colors.transparent),
                                     ),

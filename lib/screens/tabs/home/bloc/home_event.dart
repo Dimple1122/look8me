@@ -7,3 +7,5 @@ abstract class HomeEvent extends Equatable {
 }
 
 class HomeLoadingEvent extends HomeEvent {}
+
+class GetUpdatedContinueReadingNovelsEvent extends HomeEvent {}

@@ -56,13 +56,13 @@ class User {
 
 class ContinueReadingNovel {
   String? novelId;
-  double? readProgress;
+  num? readProgress;
 
   ContinueReadingNovel({this.novelId, this.readProgress});
 
   ContinueReadingNovel.fromJson(Map<String, dynamic> json) {
     novelId = json['novel_id'];
-    readProgress = json['readProgress'];
+    readProgress = json['readProgress'] as num ;
   }
 
   Map<String, dynamic> toJson() {

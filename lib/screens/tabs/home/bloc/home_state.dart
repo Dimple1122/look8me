@@ -11,3 +11,5 @@ class HomeInitial extends HomeState {}
 class HomeLoadingState extends HomeState {}
 
 class HomeLoadedState extends HomeState {}
+
+class ContinueReadingNovelsUpdatedState extends HomeState {}

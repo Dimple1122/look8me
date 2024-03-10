@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:look8me/common/model/bottom_sheet_modal_item.dart';
 import 'package:look8me/common/model/novel_model.dart';
 import 'package:look8me/common/services/locator.dart';
 import 'package:look8me/common/services/navigation_service.dart';
@@ -94,70 +95,23 @@ class MyList extends StatelessWidget {
                                     ],
                                   )),
                                   GestureDetector(
-                                      onTap: () {
-                                        showModalBottomSheet(
-                                            context: context,
-                                            builder: (context) {
-                                              return Padding(
-                                                padding:
-                                                    const EdgeInsets.all(10.0),
-                                                child: Column(
-                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                    mainAxisSize: MainAxisSize.min,
-                                                    children: [
-                                                      Text(
-                                                          bloc.myList.elementAt(index).novelName!,
-                                                          style: TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight.bold,
-                                                              fontSize: 24,
-                                                              color: Colors.white.withOpacity(0.9))),
-                                                      const Divider(color: Colors.grey, thickness: 0.5),
-                                                      const SizedBox(height: 5),
-                                                      GestureDetector(
-                                                          onTap: () {
-                                                            locator.get<NavigationService>().goBack();
-                                                            bloc.add(RemoveNovelFromMyListEvent(bloc.myList.elementAt(index).novelId!));
-                                                          },
-                                                          child: Row(mainAxisSize: MainAxisSize.max,children: [
-                                                            const Icon(
-                                                                Icons.check,
-                                                                color: Colors.white70, size: 30),
-                                                            const SizedBox(width: 5),
-                                                            Text(
-                                                                'Remove from My List',
-                                                                style: TextStyle(
-                                                                  fontSize: 20,
-                                                                    color: Colors.white.withOpacity(0.9)))
-                                                          ])),
-                                                      const SizedBox(height: 10),
-                                                      GestureDetector(
-                                                          onTap: () async {
-                                                            locator.get<NavigationService>().goBack();
-                                                            NovelSummaryDetails data = await locator.get<NavigationService>().navigateTo(ScreenName.novelSummary, arguments: bloc.myList.elementAt(index));
-                                                            if(!data.isAddedToMyList) {
-                                                              bloc.add(RemoveNovelFromMyListEvent(bloc.myList.elementAt(index).novelId!));
-                                                            }
-                                                          },
-                                                          child: Row(mainAxisSize: MainAxisSize.max, children: [
-                                                            const Icon(
-                                                                Icons.info_outline,
-                                                                color: Colors.white70, size: 30),
-                                                            const SizedBox(width: 5),
-                                                            Text(
-                                                                'View Details',
-                                                                style: TextStyle(
-                                                                    fontSize: 20,
-                                                                    color: Colors.white.withOpacity(0.9)))
-                                                          ]))
-                                                    ]),
-                                              );
-                                            },
-                                            shape:
-                                                const ContinuousRectangleBorder(),
-                                            backgroundColor:
-                                                const Color(0xFF1e2529));
-                                      },
+                                      onTap: () => CommonWidget.showBottomModalSheet(
+                                          context: context,
+                                          title: bloc.myList.elementAt(index).novelName!,
+                                          items: [
+                                            BottomSheetModalItem(icon: Icons.check, itemName: 'Remove from My List', onTap: () {
+                                              locator.get<NavigationService>().goBack();
+                                              bloc.add(RemoveNovelFromMyListEvent(bloc.myList.elementAt(index).novelId!));
+                                            }),
+                                            BottomSheetModalItem(icon: Icons.info_outline, itemName: 'View Details', onTap: () async {
+                                              locator.get<NavigationService>().goBack();
+                                              NovelSummaryDetails data = await locator.get<NavigationService>().navigateTo(ScreenName.novelSummary, arguments: bloc.myList.elementAt(index));
+                                              if(!data.isAddedToMyList) {
+                                                bloc.add(RemoveNovelFromMyListEvent(bloc.myList.elementAt(index).novelId!));
+                                              }
+                                            })
+                                          ]
+                                      ),
                                       child: const Icon(Icons.more_vert,
                                           color: Colors.white70, size: 30))
                                 ],

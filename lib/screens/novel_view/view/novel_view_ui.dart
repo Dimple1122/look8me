@@ -37,7 +37,10 @@ class NovelView extends StatelessWidget with WidgetsBindingObserver {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   GestureDetector(
-                      onTap: () => locator.get<NavigationService>().pop(bloc.readProgress),
+                      onTap: () {
+                        bloc.add(UpdateContinueReadingDbEvent());
+                        locator.get<NavigationService>().pop(bloc.readProgress);
+                      },
                       child: const Icon(
                         Icons.arrow_back,
                         color: Colors.white,
@@ -69,65 +72,72 @@ class NovelView extends StatelessWidget with WidgetsBindingObserver {
           },
         ),
       ),
-      body: BlocConsumer<NovelViewBloc, NovelViewState>(
-        listener: (context, state) {
-          if (state is NovelViewLoadedState) {
-            pdfController = PdfControllerPinch(
-                document: PdfDocument.openData(state.novelData!));
-            page = 1;
-            Future.delayed(const Duration(milliseconds: 500), () {
-              page =
-                  (pdfController.pagesCount! * bloc.readProgress).round();
-              if (page > 0 && page != pdfController.pagesCount) {
-                pdfController.jumpToPage(page);
-                context
-                    .read<NovelViewBloc>()
-                    .add(UpdatePageAndReadProgressEvent(page: page, readProgress: page/pdfController.pagesCount!));
-              }
-            });
-          }
-          if (state is UpdatedPageAndReadProgressState) {
-            page = state.page;
+      body: PopScope(
+        onPopInvoked: (didPop) {
+          if(didPop) {
+            bloc.add(UpdateContinueReadingDbEvent());
           }
         },
-        builder: (context, state) {
-          if(state is NovelViewLoadingState) {
-            return CommonWidget.getLoader();
-          }
-          else if (state is NovelViewLoadedState ||
-              state is UpdatedPageAndReadProgressState) {
-            return Row(
-              children: [
-                Expanded(
-                    child: PdfViewPinch(
-                  onDocumentError: (err) {
-                    debugPrint('Error on Document Loading: $err');
-                  },
-                  onPageChanged: (page) {
-                    context
-                        .read<NovelViewBloc>()
-                        .add(UpdatePageAndReadProgressEvent(page: page, readProgress: page/pdfController.pagesCount!));
-                  },
-                  scrollDirection: Axis.vertical,
-                  controller: pdfController,
-                )),
-                RotatedBox(
-                  quarterTurns: 1,
-                  child: LinearProgressIndicator(
-                    backgroundColor: Colors.white,
-                    color: Colors.green,
-                    value: pdfController.pagesCount != null
-                        ? (page / pdfController.pagesCount!)
-                        : 0,
-                  ),
-                )
-              ],
-            );
-          }
-          else {
-            return Container();
-          }
-        },
+        child: BlocConsumer<NovelViewBloc, NovelViewState>(
+          listener: (context, state) {
+            if (state is NovelViewLoadedState) {
+              pdfController = PdfControllerPinch(
+                  document: PdfDocument.openData(state.novelData!));
+              page = 1;
+              Future.delayed(const Duration(milliseconds: 500), () {
+                page =
+                    (pdfController.pagesCount! * bloc.readProgress).round();
+                if (page > 0 && page != pdfController.pagesCount) {
+                  pdfController.jumpToPage(page);
+                  context
+                      .read<NovelViewBloc>()
+                      .add(UpdatePageAndReadProgressEvent(page: page, readProgress: page/pdfController.pagesCount!));
+                }
+              });
+            }
+            if (state is UpdatedPageAndReadProgressState) {
+              page = state.page;
+            }
+          },
+          builder: (context, state) {
+            if(state is NovelViewLoadingState) {
+              return CommonWidget.getLoader();
+            }
+            else if (state is NovelViewLoadedState ||
+                state is UpdatedPageAndReadProgressState) {
+              return Row(
+                children: [
+                  Expanded(
+                      child: PdfViewPinch(
+                    onDocumentError: (err) {
+                      debugPrint('Error on Document Loading: $err');
+                    },
+                    onPageChanged: (page) {
+                      context
+                          .read<NovelViewBloc>()
+                          .add(UpdatePageAndReadProgressEvent(page: page, readProgress: page/pdfController.pagesCount!));
+                    },
+                    scrollDirection: Axis.vertical,
+                    controller: pdfController,
+                  )),
+                  RotatedBox(
+                    quarterTurns: 1,
+                    child: LinearProgressIndicator(
+                      backgroundColor: Colors.white,
+                      color: Colors.green,
+                      value: pdfController.pagesCount != null
+                          ? (page / pdfController.pagesCount!)
+                          : 0,
+                    ),
+                  )
+                ],
+              );
+            }
+            else {
+              return Container();
+            }
+          },
+        ),
       ),
     );
   }

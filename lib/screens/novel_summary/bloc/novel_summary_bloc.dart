@@ -18,7 +18,7 @@ class NovelSummaryBloc extends Bloc<NovelSummaryEvent, NovelSummaryState> {
   String summaryText = '';
   bool isLiked = false;
   bool isAddedToMyList = false;
-  double readProgress = 0.0;
+  num readProgress = 0.0;
   int noOfLikes = 0;
   bool isFullSummary = false;
   late final int novelIndex;

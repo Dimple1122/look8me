@@ -9,6 +9,7 @@ import 'package:look8me/screens/novel_view/bloc/novel_view_bloc.dart';
 import 'package:look8me/screens/novel_view/view/novel_view_ui.dart';
 import 'package:look8me/screens/onboarding/bloc/onboarding_bloc.dart';
 import 'package:look8me/screens/onboarding/view/onboarding_view_ui.dart';
+import 'package:look8me/screens/tabs/bloc/tabs_bloc.dart';
 import 'package:look8me/screens/tabs/view/tabs_view_ui.dart';
 import 'package:look8me/screens/welcome/bloc/welcome_bloc.dart';
 import 'package:look8me/screens/welcome/view/welcome_ui.dart';
@@ -20,10 +21,22 @@ class AppRoutes {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case ScreenName.welcome:
-        return MaterialPageRoute(
-            settings: settings,
-            builder: (context) => BlocProvider(
-                create: (context) => WelcomeBloc(), child: Welcome()));
+        return PageRouteBuilder(
+            pageBuilder: (context, animation, secondaryAnimation) =>
+                BlocProvider(
+                    create: (context) => WelcomeBloc(), child: Welcome()),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              return SlideTransition(
+                position: animation.drive(
+                    Tween(begin: const Offset(0, 1), end: Offset.zero)
+                        .chain(CurveTween(curve: Curves.ease))),
+                child: child,
+              );
+            },
+            transitionDuration:
+            const Duration(milliseconds: 500) //any duration you want
+        );
       case ScreenName.onboarding:
         return PageRouteBuilder(
             pageBuilder: (context, animation, secondaryAnimation) =>
@@ -61,7 +74,7 @@ class AppRoutes {
       case ScreenName.tabs:
         final pageIndex = settings.arguments as int;
         return MaterialPageRoute(
-            builder: (context) => Tabs(currentIndex: pageIndex));
+            builder: (context) => BlocProvider(create: (context) => TabsBloc(), child: Tabs(currentIndex: pageIndex)));
       case ScreenName.novelSummary:
         final novel = settings.arguments as Novel;
         return MaterialPageRoute(builder: (context) => BlocProvider(create: (context) => NovelSummaryBloc(novel: novel)..add(NovelSummaryLoadingEvent()), child: const NovelSummary()));
